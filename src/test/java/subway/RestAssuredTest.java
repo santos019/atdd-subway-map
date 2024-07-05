@@ -25,7 +25,7 @@ public class RestAssuredTest {
                                                 .when()
                                                 .get()
                                                 .then()
-                                                .statusCode(200)
+                                                .statusCode(HttpStatus.OK.value())
                                                 .extract();
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
