@@ -22,11 +22,11 @@ public class RestAssuredTest {
         RestAssured.baseURI = targetURL;
 
         ExtractableResponse<Response> response = given()
-                                                .when()
-                                                .get()
-                                                .then()
-                                                .statusCode(HttpStatus.OK.value())
-                                                .extract();
+                .when()
+                .get()
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }
