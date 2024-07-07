@@ -35,6 +35,15 @@ public class StationAcceptanceTest {
 
     }
 
+    public List<String> 지하철_노선도_조회() {
+
+        return RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
+
+    }
+
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
@@ -44,11 +53,7 @@ public class StationAcceptanceTest {
         assertThat(createdResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNames = 지하철_노선도_조회();
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -56,18 +61,14 @@ public class StationAcceptanceTest {
     @Test
     void showStation() {
         // given
-        for(int stationNameIdx = 0; stationNameIdx < STATION_NAME_LIST.size(); stationNameIdx++) {
+        for (int stationNameIdx = 0; stationNameIdx < STATION_NAME_LIST.size(); stationNameIdx++) {
             String stationName = STATION_NAME_LIST.get(stationNameIdx);
             ExtractableResponse<Response> createdStationResponse = 지하철_노선도_등록(stationName);
             assertThat(createdStationResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         }
 
         // when
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNames = 지하철_노선도_조회();
 
         // then
         assertThat(stationNames.size()).isEqualTo(STATION_NAME_LIST.size());
@@ -81,7 +82,7 @@ public class StationAcceptanceTest {
         List<String> createdStationNameList = STATION_NAME_LIST;
         List<Long> createdStationIdList = new ArrayList<>();
 
-        for(int stationNameIdx = 0; stationNameIdx < STATION_NAME_LIST.size(); stationNameIdx++) {
+        for (int stationNameIdx = 0; stationNameIdx < STATION_NAME_LIST.size(); stationNameIdx++) {
             String stationName = STATION_NAME_LIST.get(stationNameIdx);
             ExtractableResponse<Response> createdStationResponse = 지하철_노선도_등록(stationName);
             assertThat(createdStationResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -89,11 +90,7 @@ public class StationAcceptanceTest {
 
         }
 
-        List<String> stationNamesAfterCreation =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNamesAfterCreation = 지하철_노선도_조회();
 
         assertThat(stationNamesAfterCreation.size()).isEqualTo(createdStationNameList.size());
         assertThat(stationNamesAfterCreation.size()).isEqualTo(createdStationIdList.size());
@@ -114,11 +111,7 @@ public class StationAcceptanceTest {
         }
 
         // then
-        List<String> stationNamesAfterDeletion =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNamesAfterDeletion = 지하철_노선도_조회();
 
         assertThat(stationNamesAfterDeletion).doesNotContainAnyElementsOf(createdStationNameList);
 
