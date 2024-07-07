@@ -51,7 +51,7 @@ public class StationAcceptanceTest {
     @Test
     void showStation() {
         // given
-        List <String> createdStationNameList = new ArrayList<>(List.of("강남역", "역삼역"));
+        List <String> createdStationNameList = List.of("강남역", "역삼역");
 
         for(int i = 0; i < createdStationNameList.size(); i ++) {
 
