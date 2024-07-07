@@ -44,6 +44,16 @@ public class StationAcceptanceTest {
 
     }
 
+    public ExtractableResponse<Response> 지하철_노선도_삭제(String stationName) {
+
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/stations/" + stationName)
+                .then().log().all()
+                .extract();
+
+    }
+
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
@@ -97,22 +107,15 @@ public class StationAcceptanceTest {
         assertThat(stationNamesAfterCreation).containsAll(createdStationNameList);
 
         // when
-        for (int j = 0; j < createdStationIdList.size(); j++) {
-
-            ExtractableResponse<Response> deletedStationResponse =
-                    RestAssured.given().log().all()
-                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .when().delete("/stations/" + createdStationIdList.get(j))
-                            .then().log().all()
-                            .extract();
-
+        for (int stationNameIdx = 0; stationNameIdx < createdStationIdList.size(); stationNameIdx++) {
+            String stationName = createdStationNameList.get(stationNameIdx);
+            ExtractableResponse<Response> deletedStationResponse = 지하철_노선도_삭제(stationName);
             assertThat(deletedStationResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         }
 
         // then
         List<String> stationNamesAfterDeletion = 지하철_노선도_조회();
-
         assertThat(stationNamesAfterDeletion).doesNotContainAnyElementsOf(createdStationNameList);
 
     }
