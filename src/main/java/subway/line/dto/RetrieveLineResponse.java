@@ -9,6 +9,15 @@ public class RetrieveLineResponse {
 
     public List<CreateLineResponse> getCreateLineResponseList() {
         return this.createLineResponseList;
+    }
 
+    public void addCreateLineResponse(CreateLineResponse createLineResponse) {
+        this.createLineResponseList.add(createLineResponse);
+    }
+
+    public RetrieveLineResponse () {}
+
+    public RetrieveLineResponse (List<CreateLineResponse> createLineResponses) {
+        this.createLineResponseList = createLineResponses;
     }
 }
