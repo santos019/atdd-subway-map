@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import subway.line.dto.CreateLineRequest;
 import subway.line.dto.CreateLineResponse;
+import subway.line.dto.ModifyLineRequest;
 import subway.line.dto.RetrieveLineResponse;
 import subway.line.entity.Line;
 import subway.line.repository.LineRepository;
@@ -56,15 +57,39 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
         RetrieveLineResponse retrieveLineResponse = new RetrieveLineResponse();
         for(Line line : lines) {
-            CreateLineResponse createLineResponse = line.lineToCreateLineResponse();
-            List<Section> sections = line.getSections();
-            for(Section section : sections) {
-                Station station = section.getStation();
-                createLineResponse.addCreateStationResponse(new CreateStationResponse(station.getId(), station.getName()));
-            }
-            retrieveLineResponse.addCreateLineResponse(createLineResponse);
+            retrieveLineResponse.addCreateLineResponse(buildCreateLineResponse(line));
         }
 
         return retrieveLineResponse;
+    }
+
+    @Transactional
+    public CreateLineResponse findLine(final Long id) throws Exception {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new Exception("line is not found."));
+
+        return buildCreateLineResponse(line);
+    }
+
+    @Transactional
+    public void modifyLine(final Long id, final ModifyLineRequest modifyLineRequest) throws Exception {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new Exception("line is not found."));
+
+        line.changeName(modifyLineRequest.getName());
+        line.changeColor(modifyLineRequest.getColor());
+
+        lineRepository.save(line);
+    }
+
+    public CreateLineResponse buildCreateLineResponse(final Line line) {
+        CreateLineResponse createLineResponse = line.lineToCreateLineResponse();
+        List<Section> sections = line.getSections();
+        for(Section section : sections) {
+            Station station = section.getStation();
+            createLineResponse.addCreateStationResponse(new CreateStationResponse(station.getId(), station.getName()));
+        }
+
+        return createLineResponse;
     }
 }
