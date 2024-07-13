@@ -5,6 +5,9 @@ public class ModifyLineRequest {
     private String name;
     private String color;
 
+    public ModifyLineRequest() {
+    }
+
     public ModifyLineRequest(String name, String color) {
         this.name = name;
         this.color = color;
