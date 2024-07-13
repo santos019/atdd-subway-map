@@ -1,12 +1,10 @@
 package subway.line.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import subway.line.dto.CreateLineRequest;
 import subway.line.dto.CreateLineResponse;
+import subway.line.dto.ModifyLineRequest;
 import subway.line.dto.RetrieveLineResponse;
 import subway.line.service.LineService;
 import subway.station.dto.StationResponse;
@@ -25,12 +23,24 @@ public class LineController {
     @PostMapping("/line")
     public ResponseEntity<CreateLineResponse> createLine(@RequestBody CreateLineRequest createLineRequest) throws Exception {
         CreateLineResponse line = lineService.saveStation(createLineRequest);
-        return ResponseEntity.created(URI.create("/line/" + line.getId())).body(line);
+        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
     @GetMapping(value = "/lines")
-    public ResponseEntity<RetrieveLineResponse> showStations() {
+    public ResponseEntity<RetrieveLineResponse> showLines() {
         return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
+    @GetMapping(value = "/lines/{id}")
+    public ResponseEntity<CreateLineResponse> showLine(@PathVariable Long id) throws Exception {
+        return ResponseEntity.ok().body(lineService.findLine(id));
+    }
+
+    @PutMapping("/lines/{id}")
+    public ResponseEntity<Void> modifyLine(
+            @PathVariable Long id,
+            @RequestBody ModifyLineRequest modifyLineRequest) throws Exception {
+            lineService.modifyLine(id, modifyLineRequest);
+        return ResponseEntity.ok().build();
+    }
 }
