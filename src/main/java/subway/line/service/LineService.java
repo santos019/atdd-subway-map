@@ -82,6 +82,17 @@ public class LineService {
         lineRepository.save(line);
     }
 
+    @Transactional
+    public void deleteLine(final Long id) throws Exception {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new Exception("line is not found."));
+        for(Section section : line.getSections()) {
+            sectionRepository.delete(section);
+        }
+
+        lineRepository.delete(line);
+    }
+
     public CreateLineResponse buildCreateLineResponse(final Line line) {
         CreateLineResponse createLineResponse = line.lineToCreateLineResponse();
         List<Section> sections = line.getSections();
