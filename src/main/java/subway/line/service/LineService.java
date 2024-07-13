@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import subway.line.dto.CreateLineRequest;
 import subway.line.dto.CreateLineResponse;
+import subway.line.dto.RetrieveLineResponse;
 import subway.line.entity.Line;
 import subway.line.repository.LineRepository;
 import subway.section.repository.SectionRepository;
@@ -11,6 +12,8 @@ import subway.station.repository.StationRepository;
 import subway.station.dto.CreateStationResponse;
 import subway.section.entity.Section;
 import subway.station.entity.Station;
+
+import java.util.List;
 
 @Service
 public class LineService {
@@ -46,5 +49,22 @@ public class LineService {
         createLineResponse.addCreateStationResponse(downStationResponse);
 
         return createLineResponse;
+    }
+
+    @Transactional
+    public RetrieveLineResponse findAllLines() {
+        List<Line> lines = lineRepository.findAll();
+        RetrieveLineResponse retrieveLineResponse = new RetrieveLineResponse();
+        for(Line line : lines) {
+            CreateLineResponse createLineResponse = line.lineToCreateLineResponse();
+            List<Section> sections = line.getSections();
+            for(Section section : sections) {
+                Station station = section.getStation();
+                createLineResponse.addCreateStationResponse(new CreateStationResponse(station.getId(), station.getName()));
+            }
+            retrieveLineResponse.addCreateLineResponse(createLineResponse);
+        }
+
+        return retrieveLineResponse;
     }
 }
