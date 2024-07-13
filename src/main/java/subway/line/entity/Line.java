@@ -35,9 +35,14 @@ public class Line {
         this.distance = distance;
     }
 
-    public CreateLineResponse lineToCreateLineResponse () {
+    public CreateLineResponse lineToCreateLineResponse() {
         CreateLineResponse createLineResponse = new CreateLineResponse(id, name, color, distance);
         return createLineResponse;
+    }
+
+    public List<Section> getSections() {
+        return this.sections;
+
     }
 
 }
