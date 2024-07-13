@@ -28,5 +28,8 @@ public class Section {
         this.line = line;
     }
 
+    public Station getStation() {
+        return this.station;
+    }
 
 }
