@@ -1,7 +1,5 @@
 package subway.line.dto;
 
-import subway.line.entity.Line;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -48,11 +46,5 @@ public class CreateLineRequest {
     public Long getDownStationId() {
         return this.downStationId;
     }
-
-    public Line createLineRequestToLine() {
-        Line line = new Line(this.name, this.color, this.distance);
-        return line;
-    }
-
 
 }
