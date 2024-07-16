@@ -24,6 +24,7 @@ public class CreateLineResponse {
 
     }
 
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -56,6 +57,12 @@ public class CreateLineResponse {
 
     public void addCreateStationResponse(StationResponse createStationResponse) {
         stations.add(createStationResponse);
+    }
+
+    public void addCreateStationResponses(List<StationResponse> stationResponses) {
+        for(StationResponse stationResponse : stationResponses) {
+            stations.add(stationResponse);
+        }
     }
 
     public Long getId() {
