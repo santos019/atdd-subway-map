@@ -7,14 +7,18 @@ import subway.line.dto.CreateLineResponse;
 import subway.line.dto.ModifyLineRequest;
 import subway.line.dto.RetrieveLineResponse;
 import subway.line.entity.Line;
+import subway.line.exception.LineNotFoundException;
 import subway.line.repository.LineRepository;
 import subway.section.entity.Section;
 import subway.section.repository.SectionRepository;
 import subway.station.dto.StationResponse;
 import subway.station.entity.Station;
+import subway.station.exception.StationNotFoundException;
 import subway.station.repository.StationRepository;
 
 import java.util.List;
+
+import static subway.converter.LineConverter.convertToCreateLineResponse;
 
 @Service
 public class LineService {
@@ -29,9 +33,14 @@ public class LineService {
         this.sectionRepository = sectionRepository;
     }
 
-    public Station getStationByIdOrThrow(Long stationId) throws Exception {
+    public Station getStationByIdOrThrow(Long stationId){
         return stationRepository.findById(stationId)
-                .orElseThrow(() -> new Exception("upStation is not found."));
+                .orElseThrow(() -> new StationNotFoundException("Station is not found."));
+    }
+
+    public Line getLineByIdOrThrow(Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new LineNotFoundException("line is not found."));
     }
 
     @Transactional
@@ -48,9 +57,7 @@ public class LineService {
         StationResponse upStationResponse = new StationResponse(upStation.getId(), upStation.getName());
         StationResponse downStationResponse = new StationResponse(downStation.getId(), downStation.getName());
 
-        CreateLineResponse createLineResponse = line.lineToCreateLineResponse();
-        createLineResponse.addCreateStationResponse(upStationResponse);
-        createLineResponse.addCreateStationResponse(downStationResponse);
+        CreateLineResponse createLineResponse = convertToCreateLineResponse(line, List.of(upStationResponse, downStationResponse));
 
         return createLineResponse;
     }
@@ -67,18 +74,15 @@ public class LineService {
     }
 
     @Transactional
-    public CreateLineResponse findLine(final Long id) throws Exception {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new Exception("line is not found."));
+    public CreateLineResponse findLine(final Long id) {
+        Line line = getLineByIdOrThrow(id);
 
         return buildCreateLineResponse(line);
     }
 
     @Transactional
-    public void modifyLine(final Long id, final ModifyLineRequest modifyLineRequest) throws Exception {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new Exception("line is not found."));
-
+    public void modifyLine(final Long id, final ModifyLineRequest modifyLineRequest) {
+        Line line = getLineByIdOrThrow(id);
         line.changeName(modifyLineRequest.getName());
         line.changeColor(modifyLineRequest.getColor());
 
@@ -86,10 +90,8 @@ public class LineService {
     }
 
     @Transactional
-    public void deleteLine(final Long id) throws Exception {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new Exception("line is not found."));
-
+    public void deleteLine(final Long id) {
+        Line line = getLineByIdOrThrow(id);
         lineRepository.delete(line);
     }
 
