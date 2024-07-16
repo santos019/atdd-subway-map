@@ -22,23 +22,26 @@ public class Line {
     @Column(nullable = false)
     private Long distance;
 
-    @OneToMany(mappedBy = "line", fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "LINE_ID")
     private List<Section> sections;
 
     public Line() {
 
     }
 
-    public Line(String name, String color, Long distance) {
+    public Line(String name, String color, Long distance, List<Section> sections) {
         this.name = name;
         this.color = color;
         this.distance = distance;
+        this.sections = sections;
     }
 
     public CreateLineResponse lineToCreateLineResponse() {
         CreateLineResponse createLineResponse = new CreateLineResponse(id, name, color, distance);
         return createLineResponse;
     }
+
 
     public List<Section> getSections() {
         return this.sections;
