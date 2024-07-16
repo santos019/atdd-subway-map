@@ -42,6 +42,21 @@ public class Line {
         return createLineResponse;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public Long getDistance() {
+        return distance;
+    }
 
     public List<Section> getSections() {
         return this.sections;
