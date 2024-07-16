@@ -1,6 +1,6 @@
 package subway.line.dto;
 
-import subway.station.dto.CreateStationResponse;
+import subway.station.dto.StationResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +11,39 @@ public class CreateLineResponse {
     private String name;
     private String color;
     private Long distance;
-    private List<CreateStationResponse> stations = new ArrayList<>();
+    private List<StationResponse> stations = new ArrayList<>();
 
     public CreateLineResponse() {
+    }
+
+    public CreateLineResponse(String name, String color, List<StationResponse> stations, Long distance) {
+        this.name = name;
+        this.color = color;
+        this.distance = distance;
+        this.stations = stations;
+
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        CreateLineResponse createLineResponse_obj = (CreateLineResponse) obj;
+
+        if (!name.equals(createLineResponse_obj.name)) return false;
+        if (!color.equals(createLineResponse_obj.color)) return false;
+        if (!distance.equals(createLineResponse_obj.distance)) return false;
+        if (stations.size() != (createLineResponse_obj.stations.size())) return false;
+
+        List<StationResponse> stations_obj = createLineResponse_obj.getStations();
+
+        for (int i = 0; i < stations.size(); i++) {
+            if (!stations_obj.get(i).getId().equals(stations.get(i).getId())) return false;
+            if (!stations_obj.get(i).getName().equals(stations.get(i).getName())) return false;
+        }
+
+        return true;
     }
 
     public CreateLineResponse(Long id, String name, String color, Long distance) {
@@ -24,7 +54,7 @@ public class CreateLineResponse {
 
     }
 
-    public void addCreateStationResponse(CreateStationResponse createStationResponse) {
+    public void addCreateStationResponse(StationResponse createStationResponse) {
         stations.add(createStationResponse);
     }
 
@@ -44,7 +74,7 @@ public class CreateLineResponse {
         return this.distance;
     }
 
-    public List<CreateStationResponse> getStations() {
+    public List<StationResponse> getStations() {
         return this.stations;
     }
 
