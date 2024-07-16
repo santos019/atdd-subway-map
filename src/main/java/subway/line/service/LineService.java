@@ -8,11 +8,11 @@ import subway.line.dto.ModifyLineRequest;
 import subway.line.dto.RetrieveLineResponse;
 import subway.line.entity.Line;
 import subway.line.repository.LineRepository;
-import subway.section.repository.SectionRepository;
-import subway.station.repository.StationRepository;
-import subway.station.dto.CreateStationResponse;
 import subway.section.entity.Section;
+import subway.section.repository.SectionRepository;
+import subway.station.dto.StationResponse;
 import subway.station.entity.Station;
+import subway.station.repository.StationRepository;
 
 import java.util.List;
 
@@ -29,21 +29,24 @@ public class LineService {
         this.sectionRepository = sectionRepository;
     }
 
+    public Station getStationByIdOrThrow(Long stationId) throws Exception {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new Exception("upStation is not found."));
+    }
+
     @Transactional
     public CreateLineResponse saveStation(final CreateLineRequest createLineRequest) throws Exception {
-        Line line = lineRepository.save(createLineRequest.createLineRequestToLine());
-        Station upStation = stationRepository.findById(createLineRequest.getUpStationId())
-                .orElseThrow(() -> new Exception("upStation is not found."));
-        Station downStation = stationRepository.findById(createLineRequest.getDownStationId())
-                .orElseThrow(() -> new Exception("downStation is not found."));
+        Station upStation = getStationByIdOrThrow(createLineRequest.getUpStationId());
+        Station downStation = getStationByIdOrThrow(createLineRequest.getDownStationId());
 
-        Section upSection = new Section(upStation, line);
-        sectionRepository.save(upSection);
-        Section downSection = new Section(downStation, line);
-        sectionRepository.save(downSection);
+        Section upSection = new Section(upStation);
+        Section downSection = new Section(downStation);
 
-        CreateStationResponse upStationResponse = new CreateStationResponse(upStation.getId(), upStation.getName());
-        CreateStationResponse downStationResponse = new CreateStationResponse(downStation.getId(), downStation.getName());
+        Line line = new Line(createLineRequest.getName(), createLineRequest.getColor(), createLineRequest.getDistance(), List.of(upSection, downSection));
+        lineRepository.save(line);
+
+        StationResponse upStationResponse = new StationResponse(upStation.getId(), upStation.getName());
+        StationResponse downStationResponse = new StationResponse(downStation.getId(), downStation.getName());
 
         CreateLineResponse createLineResponse = line.lineToCreateLineResponse();
         createLineResponse.addCreateStationResponse(upStationResponse);
@@ -54,9 +57,9 @@ public class LineService {
 
     @Transactional
     public RetrieveLineResponse findAllLines() {
-        List<Line> lines = lineRepository.findAll();
+        List<Line> lines = lineRepository.findAllWithSections();
         RetrieveLineResponse retrieveLineResponse = new RetrieveLineResponse();
-        for(Line line : lines) {
+        for (Line line : lines) {
             retrieveLineResponse.addCreateLineResponse(buildCreateLineResponse(line));
         }
 
@@ -86,9 +89,6 @@ public class LineService {
     public void deleteLine(final Long id) throws Exception {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new Exception("line is not found."));
-        for(Section section : line.getSections()) {
-            sectionRepository.delete(section);
-        }
 
         lineRepository.delete(line);
     }
@@ -96,9 +96,9 @@ public class LineService {
     public CreateLineResponse buildCreateLineResponse(final Line line) {
         CreateLineResponse createLineResponse = line.lineToCreateLineResponse();
         List<Section> sections = line.getSections();
-        for(Section section : sections) {
+        for (Section section : sections) {
             Station station = section.getStation();
-            createLineResponse.addCreateStationResponse(new CreateStationResponse(station.getId(), station.getName()));
+            createLineResponse.addCreateStationResponse(new StationResponse(station.getId(), station.getName()));
         }
 
         return createLineResponse;
