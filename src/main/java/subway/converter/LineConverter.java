@@ -1,10 +1,13 @@
 package subway.converter;
 
-import subway.line.dto.CreateLineResponse;
+import subway.line.dto.LineResponse;
 import subway.line.entity.Line;
 import subway.station.dto.StationResponse;
+import subway.station.entity.Station;
 
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 public class LineConverter {
 
@@ -12,10 +15,22 @@ public class LineConverter {
         throw new UnsupportedOperationException("Utility class");
     }
 
-    public static CreateLineResponse convertToCreateLineResponse (Line line, List<StationResponse> stationResponses) {
-        CreateLineResponse createLineResponse = new CreateLineResponse(line.getId(), line.getName(), line.getColor(), line.getDistance());
-        createLineResponse.addCreateStationResponses(stationResponses);
+    public static LineResponse convertToLineResponseByLineAndStations(Line line, List<StationResponse> stationResponses) {
+        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(), line.getDistance());
+        lineResponse.addCreateStationResponses(stationResponses);
 
-        return createLineResponse;
+        return lineResponse;
     }
+
+    public static LineResponse convertToLineResponseByLine(final Line line) {
+        List<StationResponse> stationResponses = line.getSections().getSections().stream()
+                .map(section -> {
+                    Station station = section.getStation();
+                    return new StationResponse(station.getId(), station.getName());
+                }).collect(toList());
+
+        return convertToLineResponseByLineAndStations(line, stationResponses);
+    }
+
+
 }
