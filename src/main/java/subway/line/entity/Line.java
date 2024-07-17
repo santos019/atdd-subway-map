@@ -1,10 +1,8 @@
 package subway.line.entity;
 
-import subway.line.dto.CreateLineResponse;
-import subway.section.entity.Section;
+import subway.section.entity.Sections;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 public class Line {
@@ -22,24 +20,30 @@ public class Line {
     @Column(nullable = false)
     private Long distance;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "LINE_ID")
-    private List<Section> sections;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "SECTIONS_ID")
+    private Sections sections = new Sections();
 
-    public Line() {
-
+    protected Line() {
     }
 
-    public Line(String name, String color, Long distance, List<Section> sections) {
+    public Line(String name, String color, Long distance, Sections sections) {
         this.name = name;
         this.color = color;
         this.distance = distance;
         this.sections = sections;
     }
 
-    public CreateLineResponse lineToCreateLineResponse() {
-        CreateLineResponse createLineResponse = new CreateLineResponse(id, name, color, distance);
-        return createLineResponse;
+    public static Line of(String name, String color, Long distance, Sections sections) {
+        return new Line(name, color, distance, sections);
+    }
+
+    public void changeColor(String color) {
+        this.color = color;
+    }
+
+    public void changeName(String name) {
+        this.name = name;
     }
 
     public Long getId() {
@@ -58,17 +62,8 @@ public class Line {
         return distance;
     }
 
-    public List<Section> getSections() {
+    public Sections getSections() {
         return this.sections;
-
-    }
-
-    public void changeColor(String color) {
-        this.color = color;
-    }
-
-    public void changeName(String name) {
-        this.name = name;
     }
 
 }
