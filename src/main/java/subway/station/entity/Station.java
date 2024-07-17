@@ -12,11 +12,15 @@ public class Station {
     @Column(length = 20, nullable = false)
     private String name;
 
-    public Station() {
+    protected Station() {
     }
 
     public Station(String name) {
         this.name = name;
+    }
+
+    public static Station of (String name) {
+        return new Station(name);
     }
 
     public Long getId() {
