@@ -44,7 +44,7 @@ public class LineService {
     }
 
     @Transactional
-    public CreateLineResponse saveStation(final CreateLineRequest createLineRequest) throws Exception {
+    public CreateLineResponse saveLine(final CreateLineRequest createLineRequest) throws Exception {
         Station upStation = getStationByIdOrThrow(createLineRequest.getUpStationId());
         Station downStation = getStationByIdOrThrow(createLineRequest.getDownStationId());
 
