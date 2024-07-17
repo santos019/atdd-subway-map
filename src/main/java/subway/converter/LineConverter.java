@@ -7,6 +7,11 @@ import subway.station.dto.StationResponse;
 import java.util.List;
 
 public class LineConverter {
+
+    private LineConverter() {
+        throw new UnsupportedOperationException("Utility class");
+    }
+
     public static CreateLineResponse convertToCreateLineResponse (Line line, List<StationResponse> stationResponses) {
         CreateLineResponse createLineResponse = new CreateLineResponse(line.getId(), line.getName(), line.getColor(), line.getDistance());
         createLineResponse.addCreateStationResponses(stationResponses);
