@@ -2,7 +2,6 @@ package subway.line.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import subway.line.entity.Line;
 
 import java.util.List;
