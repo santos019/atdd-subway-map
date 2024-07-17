@@ -33,12 +33,12 @@ public class LineService {
         this.sectionRepository = sectionRepository;
     }
 
-    public Station getStationByIdOrThrow(Long stationId){
+    private Station getStationByIdOrThrow(Long stationId){
         return stationRepository.findById(stationId)
                 .orElseThrow(() -> new StationNotFoundException("Station is not found."));
     }
 
-    public Line getLineByIdOrThrow(Long lineId) {
+    private Line getLineByIdOrThrow(Long lineId) {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new LineNotFoundException("line is not found."));
     }
