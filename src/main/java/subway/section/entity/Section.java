@@ -15,11 +15,14 @@ public class Section {
     private Station station;
 
     public Section() {
-
     }
 
-    public Section (Station station) {
+    public Section(Station station) {
         this.station = station;
+    }
+
+    public static Section of(Station station) {
+        return new Section(station);
     }
 
     public Station getStation() {
