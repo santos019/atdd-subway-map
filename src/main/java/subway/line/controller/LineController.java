@@ -21,13 +21,13 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<CreateLineResponse> createLine(@RequestBody CreateLineRequest createLineRequest) throws Exception {
         CreateLineResponse line = lineService.saveStation(createLineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
-    @GetMapping(value = "")
+    @GetMapping
     public ResponseEntity<RetrieveLineResponse> showLines() {
         return ResponseEntity.ok().body(lineService.findAllLines());
     }
