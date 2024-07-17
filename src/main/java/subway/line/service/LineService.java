@@ -3,13 +3,14 @@ package subway.line.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import subway.line.dto.CreateLineRequest;
-import subway.line.dto.CreateLineResponse;
+import subway.line.dto.LineResponse;
 import subway.line.dto.ModifyLineRequest;
-import subway.line.dto.RetrieveLineResponse;
+import subway.line.dto.LinesResponse;
 import subway.line.entity.Line;
 import subway.line.exception.LineNotFoundException;
 import subway.line.repository.LineRepository;
 import subway.section.entity.Section;
+import subway.section.entity.Sections;
 import subway.section.repository.SectionRepository;
 import subway.station.dto.StationResponse;
 import subway.station.entity.Station;
@@ -18,7 +19,8 @@ import subway.station.repository.StationRepository;
 
 import java.util.List;
 
-import static subway.converter.LineConverter.convertToCreateLineResponse;
+import static subway.converter.LineConverter.convertToLineResponseByLine;
+import static subway.converter.LineConverter.convertToLineResponseByLineAndStations;
 
 @Service
 public class LineService {
@@ -33,51 +35,42 @@ public class LineService {
         this.sectionRepository = sectionRepository;
     }
 
-    private Station getStationByIdOrThrow(Long stationId){
-        return stationRepository.findById(stationId)
-                .orElseThrow(() -> new StationNotFoundException("Station is not found."));
-    }
-
-    private Line getLineByIdOrThrow(Long lineId) {
-        return lineRepository.findById(lineId)
-                .orElseThrow(() -> new LineNotFoundException("line is not found."));
-    }
-
     @Transactional
-    public CreateLineResponse saveLine(final CreateLineRequest createLineRequest) throws Exception {
+    public LineResponse saveLine(final CreateLineRequest createLineRequest) {
         Station upStation = getStationByIdOrThrow(createLineRequest.getUpStationId());
         Station downStation = getStationByIdOrThrow(createLineRequest.getDownStationId());
 
-        Section upSection = new Section(upStation);
-        Section downSection = new Section(downStation);
+        Section upSection = Section.of(upStation);
+        Section downSection = Section.of(downStation);
 
-        Line line = new Line(createLineRequest.getName(), createLineRequest.getColor(), createLineRequest.getDistance(), List.of(upSection, downSection));
+        Line line = Line.of(createLineRequest.getName(), createLineRequest.getColor(), createLineRequest.getDistance(), Sections.of(List.of(upSection, downSection)));
+
         lineRepository.save(line);
 
         StationResponse upStationResponse = new StationResponse(upStation.getId(), upStation.getName());
         StationResponse downStationResponse = new StationResponse(downStation.getId(), downStation.getName());
 
-        CreateLineResponse createLineResponse = convertToCreateLineResponse(line, List.of(upStationResponse, downStationResponse));
+        LineResponse lineResponse = convertToLineResponseByLineAndStations(line, List.of(upStationResponse, downStationResponse));
 
-        return createLineResponse;
+        return lineResponse;
     }
 
-    @Transactional
-    public RetrieveLineResponse findAllLines() {
+    @Transactional(readOnly = true)
+    public LinesResponse findAllLines() {
         List<Line> lines = lineRepository.findAllWithSections();
-        RetrieveLineResponse retrieveLineResponse = new RetrieveLineResponse();
+        LinesResponse linesResponse = new LinesResponse();
         for (Line line : lines) {
-            retrieveLineResponse.addCreateLineResponse(buildCreateLineResponse(line));
+            linesResponse.addLineResponse(convertToLineResponseByLine(line));
         }
 
-        return retrieveLineResponse;
+        return linesResponse;
     }
 
-    @Transactional
-    public CreateLineResponse findLine(final Long id) {
+    @Transactional(readOnly = true)
+    public LineResponse findLine(final Long id) {
         Line line = getLineByIdOrThrow(id);
 
-        return buildCreateLineResponse(line);
+        return convertToLineResponseByLine(line);
     }
 
     @Transactional
@@ -95,14 +88,13 @@ public class LineService {
         lineRepository.delete(line);
     }
 
-    public CreateLineResponse buildCreateLineResponse(final Line line) {
-        CreateLineResponse createLineResponse = line.lineToCreateLineResponse();
-        List<Section> sections = line.getSections();
-        for (Section section : sections) {
-            Station station = section.getStation();
-            createLineResponse.addCreateStationResponse(new StationResponse(station.getId(), station.getName()));
-        }
+    private Station getStationByIdOrThrow(Long stationId){
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new StationNotFoundException("Station is not found."));
+    }
 
-        return createLineResponse;
+    private Line getLineByIdOrThrow(Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new LineNotFoundException("line is not found."));
     }
 }
