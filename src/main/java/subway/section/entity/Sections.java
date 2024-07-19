@@ -21,10 +21,6 @@ public class Sections {
         this.sections = sections;
     }
 
-    public static Sections of(List<Section> sections) {
-        return new Sections(sections);
-    }
-
     public List<Section> getSections() {
         return sections;
     }

@@ -43,7 +43,7 @@ public class LineService {
         Section upSection = Section.of(upStation);
         Section downSection = Section.of(downStation);
 
-        Line line = Line.of(createLineRequest.getName(), createLineRequest.getColor(), createLineRequest.getDistance(), Sections.of(List.of(upSection, downSection)));
+        Line line = Line.of(createLineRequest.getName(), createLineRequest.getColor(), createLineRequest.getDistance(), new Sections(List.of(upSection, downSection)));
 
         lineRepository.save(line);
 
