@@ -24,8 +24,12 @@ public class StationResponse {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
         StationResponse that = (StationResponse) obj;
         return Objects.equals(id, that.id) &&
                 Objects.equals(name, that.name);
