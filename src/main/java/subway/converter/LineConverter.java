@@ -15,13 +15,6 @@ public class LineConverter {
         throw new UnsupportedOperationException("Utility class");
     }
 
-    public static LineResponse convertToLineResponseByLineAndStations(Line line, List<StationResponse> stationResponses) {
-        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(), line.getDistance());
-        lineResponse.addCreateStationResponses(stationResponses);
-
-        return lineResponse;
-    }
-
     public static LineResponse convertToLineResponseByLine(final Line line) {
         List<StationResponse> stationResponses = line.getSections().getSections().stream()
                 .map(section -> {
@@ -32,5 +25,11 @@ public class LineConverter {
         return convertToLineResponseByLineAndStations(line, stationResponses);
     }
 
+    public static LineResponse convertToLineResponseByLineAndStations(Line line, List<StationResponse> stationResponses) {
+        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(), line.getDistance());
+        lineResponse.addCreateStationResponses(stationResponses);
+
+        return lineResponse;
+    }
 
 }
