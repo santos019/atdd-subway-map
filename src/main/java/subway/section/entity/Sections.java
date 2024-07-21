@@ -4,15 +4,11 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+@Embeddable
 public class Sections {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "SECTION_ID")
+    @JoinColumn(name = "LINE_ID")
     private List<Section> sections = new ArrayList<>();
 
     public Sections() {}
@@ -23,5 +19,13 @@ public class Sections {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
+    public void removeSection(Section section) {
+        sections.remove(section);
     }
 }

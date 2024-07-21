@@ -43,7 +43,11 @@ public class LineService {
         Section upSection = Section.of(upStation);
         Section downSection = Section.of(downStation);
 
-        Line line = Line.of(createLineRequest.getName(), createLineRequest.getColor(), createLineRequest.getDistance(), new Sections(List.of(upSection, downSection)));
+        Sections sections = new Sections();
+        sections.addSection(upSection);
+        sections.addSection(downSection);
+
+        Line line = Line.of(createLineRequest.getName(), createLineRequest.getColor(), createLineRequest.getDistance(), sections);
 
         lineRepository.save(line);
 
@@ -57,7 +61,7 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LinesResponse findAllLines() {
-        List<Line> lines = lineRepository.findAllWithSections();
+        List<Line> lines = lineRepository.findAll();
         LinesResponse linesResponse = new LinesResponse();
         for (Line line : lines) {
             linesResponse.addLineResponse(convertToLineResponseByLine(line));

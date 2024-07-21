@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface LineRepository extends JpaRepository<Line, Long> {
 
-    @Query("SELECT DISTINCT  l FROM Line l LEFT JOIN FETCH l.sections")
-    List<Line> findAllWithSections();
+//    @Query("SELECT DISTINCT l FROM Line l LEFT JOIN FETCH l.section")
+//    List<Line> findAllWithSection();
 }

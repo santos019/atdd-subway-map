@@ -20,9 +20,8 @@ public class Line {
     @Column(nullable = false)
     private Long distance;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "SECTIONS_ID")
-    private Sections sections = new Sections();
+    @Embedded
+    private Sections sections;
 
     protected Line() {
     }

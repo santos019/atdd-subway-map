@@ -1,5 +1,6 @@
 package subway.section.entity;
 
+import subway.line.entity.Line;
 import subway.station.entity.Station;
 
 import javax.persistence.*;
