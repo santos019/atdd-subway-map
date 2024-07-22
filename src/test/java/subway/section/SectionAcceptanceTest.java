@@ -94,31 +94,33 @@ public class SectionAcceptanceTest {
     @Sql(scripts = "classpath:truncate-tables.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void deleteSection_success() {
         // given ...
-
-        지하철_구간_등록(신분당선.getId(), SectionRequest.of(강남역.getId(), 선릉역.getId(), 10L));
+        지하철_구간_등록(신분당선.getId(), SectionRequest.of(선릉역.getId(), 삼성역.getId(), 10L));
         LineResponse 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
         Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(삼성역));
 
-        // when & then
+        // when
         지하철_구간_삭제(구간이_등록된_신분당선.getId(), 삼성역.getId());
+
+        // then
+        LineResponse 구간이_삭제된_신분당선 = 지하철_노선_조회(신분당선.getId());
+        Assertions.assertFalse(구간이_삭제된_신분당선.getStations().contains(삼성역));
 
     }
 
     /* Given: 지하철 역과 지하철 노선이 등록되어 있고,
        When: 관리자가 지하철 노선의 하행 종점역이 아닌 역을 삭제 요청하면,
        Then: 관리자가 구간 삭제 요청은 실패한다. */
-    @DisplayName("지하철 구간을 삭제한다.")
+    @DisplayName("지하철 구간 삭제를 실패한다. 하행 종점역만 삭제 가능하다.")
     @Test
     @Sql(scripts = "classpath:truncate-tables.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void deleteSection_fail() {
         // given ...
-
-        지하철_구간_등록(신분당선.getId(), SectionRequest.of(강남역.getId(), 선릉역.getId(), 10L));
+        지하철_구간_등록(신분당선.getId(), SectionRequest.of(선릉역.getId(), 삼성역.getId(), 10L));
         LineResponse 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
         Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(삼성역));
 
         // when & then
-        ErrorResponse errorResponse = 지하철_구간_삭제_실패(구간이_등록된_신분당선.getId(), 삼성역.getId());
+        ErrorResponse errorResponse = 지하철_구간_삭제_실패(구간이_등록된_신분당선.getId(), 선릉역.getId());
         Assertions.assertEquals(errorResponse.getCode(), SECTION_NOT_PERMISSION_NOT_LAST_DESCENDING_STATION.getCode());
 
     }
@@ -126,18 +128,16 @@ public class SectionAcceptanceTest {
     /* Given: 지하철 역과 지하철 노선이 등록되어 있고,
         When: 관리자가 지하철 노선의 구간이 1개인 경우,
         Then: 관리자가 삭제 요청은 실패한다. */
-    @DisplayName("지하철 구간을 삭제한다.")
+    @DisplayName("지하철 구간 삭제 실패한다. 지하철 노선 구간이 1개 이상이어야 삭제가능하다.")
     @Test
     @Sql(scripts = "classpath:truncate-tables.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void deleteSection_fail_2() {
         // given ...
-
-        지하철_구간_등록(신분당선.getId(), SectionRequest.of(강남역.getId(), 선릉역.getId(), 10L));
         LineResponse 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
-        Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(삼성역));
+        Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(강남역));
 
         // when & then
-        ErrorResponse errorResponse = 지하철_구간_삭제_실패(구간이_등록된_신분당선.getId(), 삼성역.getId());
+        ErrorResponse errorResponse = 지하철_구간_삭제_실패(구간이_등록된_신분당선.getId(), 선릉역.getId());
         Assertions.assertEquals(errorResponse.getCode(), SECTION_NOT_PERMISSION_COUNT_TOO_LOW.getCode());
 
     }

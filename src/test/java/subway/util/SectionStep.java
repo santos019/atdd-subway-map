@@ -14,23 +14,23 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class SectionStep {
 
-    public static List<String> 지하철_구간_등록(Long id, SectionRequest sectionRequest) {
+    public static List<String> 지하철_구간_등록(Long lineId, SectionRequest sectionRequest) {
 
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(sectionRequest)
-                .when().post("/lines/"+ id +"/sections")
+                .when().post("/lines/"+ lineId +"/sections")
                 .then().log().all()
                 .extract().jsonPath().getList("name", String.class);
 
     }
 
-    public static ErrorResponse 지하철_구간_등록_실패(Long id, SectionRequest sectionRequest) {
+    public static ErrorResponse 지하철_구간_등록_실패(Long lineId, SectionRequest sectionRequest) {
 
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(sectionRequest)
-                .when().post("/lines/"+ id +"/sections")
+                .when().post("/lines/" + lineId + "/sections")
                 .then().log().all()
                 .extract().as(ErrorResponse.class);
     }
@@ -43,7 +43,7 @@ public class SectionStep {
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     public static ErrorResponse 지하철_구간_삭제_실패(Long lineId, Long stationId) {
