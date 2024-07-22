@@ -10,7 +10,7 @@ import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/lines/{id}")
+@RequestMapping("/lines/{id}/sections")
 public class SectionController {
 
     private final SectionService sectionService;
@@ -19,11 +19,18 @@ public class SectionController {
         this.sectionService = sectionService;
     }
 
-    @PostMapping("/sections")
+    @PostMapping
     public ResponseEntity createSection(@PathVariable Long id, @Valid @RequestBody SectionRequest sectionRequest) {
         SectionResponse sectionResponse = sectionService.createSection(id, sectionRequest);
 
         return ResponseEntity.created(URI.create("/lines/" + sectionResponse.getLineId() + "/sections")).body(sectionResponse);
+    }
+
+    @DeleteMapping
+    public ResponseEntity deleteSection(@PathVariable Long id, @RequestParam Long stationId) {
+        sectionService.deleteSection(id, stationId);
+
+        return ResponseEntity.ok().build();
     }
 
 }
