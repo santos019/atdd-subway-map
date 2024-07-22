@@ -5,6 +5,8 @@ import subway.line.entity.Line;
 import subway.line.exception.LineNotFoundException;
 import subway.line.repository.LineRepository;
 
+import static subway.common.constant.ErrorCode.LINE_NOT_FOUND;
+
 @Component
 public class LineComponent {
 
@@ -16,7 +18,7 @@ public class LineComponent {
 
     public Line getLineByIdOrThrow(Long lineId) {
         return lineRepository.findById(lineId)
-                .orElseThrow(() -> new LineNotFoundException("line is not found."));
+                .orElseThrow(() -> new LineNotFoundException(String.valueOf(LINE_NOT_FOUND)));
     }
 
     public Line saveLine(Line line) {
