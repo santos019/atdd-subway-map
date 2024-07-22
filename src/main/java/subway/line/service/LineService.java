@@ -5,8 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 import subway.line.component.LineComponent;
 import subway.line.dto.CreateLineRequest;
 import subway.line.dto.LineResponse;
-import subway.line.dto.ModifyLineRequest;
 import subway.line.dto.LinesResponse;
+import subway.line.dto.ModifyLineRequest;
 import subway.line.entity.Line;
 import subway.line.repository.LineRepository;
 import subway.section.entity.Section;
@@ -50,7 +50,6 @@ public class LineService {
         sections.setLastDownStationId(downStation.getId());
 
         Line line = Line.of(createLineRequest.getName(), createLineRequest.getColor(), createLineRequest.getDistance(), sections);
-
         lineRepository.save(line);
 
         StationResponse upStationResponse = new StationResponse(upStation.getId(), upStation.getName());
