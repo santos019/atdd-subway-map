@@ -12,7 +12,7 @@ public class SectionResponse {
         this.section = section;
     }
 
-    public static SectionResponse of (Long lineId, Section section) {
+    public static SectionResponse of(Long lineId, Section section) {
         return new SectionResponse(lineId, section);
 
     }
