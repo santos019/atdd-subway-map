@@ -2,20 +2,19 @@ package subway.line.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import subway.line.component.LineComponent;
 import subway.line.dto.CreateLineRequest;
 import subway.line.dto.LineResponse;
 import subway.line.dto.ModifyLineRequest;
 import subway.line.dto.LinesResponse;
 import subway.line.entity.Line;
-import subway.line.exception.LineNotFoundException;
 import subway.line.repository.LineRepository;
 import subway.section.entity.Section;
 import subway.section.entity.Sections;
 import subway.section.repository.SectionRepository;
+import subway.station.component.StationComponent;
 import subway.station.dto.StationResponse;
 import subway.station.entity.Station;
-import subway.station.exception.StationNotFoundException;
-import subway.station.repository.StationRepository;
 
 import java.util.List;
 
@@ -26,26 +25,29 @@ import static subway.converter.LineConverter.convertToLineResponseByLineAndStati
 public class LineService {
 
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
     private final SectionRepository sectionRepository;
+    private final StationComponent stationComponent;
+    private final LineComponent lineComponent;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository) {
+    public LineService(LineRepository lineRepository, SectionRepository sectionRepository, StationComponent stationComponent, LineComponent lineComponent) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.stationComponent = stationComponent;
         this.sectionRepository = sectionRepository;
+        this.lineComponent = lineComponent;
     }
 
     @Transactional
     public LineResponse saveLine(final CreateLineRequest createLineRequest) {
-        Station upStation = getStationByIdOrThrow(createLineRequest.getUpStationId());
-        Station downStation = getStationByIdOrThrow(createLineRequest.getDownStationId());
+        Station upStation = stationComponent.getStationByIdOrThrow(createLineRequest.getUpStationId());
+        Station downStation = stationComponent.getStationByIdOrThrow(createLineRequest.getDownStationId());
 
-        Section upSection = Section.of(upStation);
-        Section downSection = Section.of(downStation);
+        Section section = Section.of(upStation, downStation, createLineRequest.getDistance());
 
         Sections sections = new Sections();
-        sections.addSection(upSection);
-        sections.addSection(downSection);
+        sections.addSection(section);
+
+        sections.setLastUpStationId(upStation.getId());
+        sections.setLastDownStationId(downStation.getId());
 
         Line line = Line.of(createLineRequest.getName(), createLineRequest.getColor(), createLineRequest.getDistance(), sections);
 
@@ -72,14 +74,14 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLine(final Long id) {
-        Line line = getLineByIdOrThrow(id);
+        Line line = lineComponent.getLineByIdOrThrow(id);
 
         return convertToLineResponseByLine(line);
     }
 
     @Transactional
     public void modifyLine(final Long id, final ModifyLineRequest modifyLineRequest) {
-        Line line = getLineByIdOrThrow(id);
+        Line line = lineComponent.getLineByIdOrThrow(id);
         line.changeName(modifyLineRequest.getName());
         line.changeColor(modifyLineRequest.getColor());
 
@@ -88,17 +90,8 @@ public class LineService {
 
     @Transactional
     public void deleteLine(final Long id) {
-        Line line = getLineByIdOrThrow(id);
+        Line line = lineComponent.getLineByIdOrThrow(id);
         lineRepository.delete(line);
     }
 
-    private Station getStationByIdOrThrow(Long stationId){
-        return stationRepository.findById(stationId)
-                .orElseThrow(() -> new StationNotFoundException("Station is not found."));
-    }
-
-    private Line getLineByIdOrThrow(Long lineId) {
-        return lineRepository.findById(lineId)
-                .orElseThrow(() -> new LineNotFoundException("line is not found."));
-    }
 }
