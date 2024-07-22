@@ -11,6 +11,10 @@ public class Sections {
     @JoinColumn(name = "LINE_ID")
     private List<Section> sections = new ArrayList<>();
 
+    private Long lastUpStationId;
+
+    private Long lastDownStationId;
+
     public Sections() {}
 
     public Sections(List<Section> sections) {
@@ -28,4 +32,21 @@ public class Sections {
     public void removeSection(Section section) {
         sections.remove(section);
     }
+
+    public void setLastUpStationId(Long upLastStationId) {
+        this.lastUpStationId = upLastStationId;
+    }
+
+    public void setLastDownStationId(Long downLastStationId) {
+        this.lastDownStationId = downLastStationId;
+    }
+
+    public Long getLastUpStationId() {
+        return lastUpStationId;
+    }
+
+    public Long getLastDownStationId() {
+        return lastDownStationId;
+    }
+
 }

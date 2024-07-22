@@ -1,9 +1,10 @@
 package subway.section.entity;
 
-import subway.line.entity.Line;
 import subway.station.entity.Station;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Entity
 public class Section {
@@ -12,22 +13,41 @@ public class Section {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "STATION_ID")
-    private Station station;
+    @JoinColumn(name = "UP_STATION_ID")
+    private Station upStation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DOWN_STATION_ID")
+    private Station downStation;
+
+    @NotNull
+    private Long distance;
 
     public Section() {
     }
 
-    public Section(Station station) {
-        this.station = station;
+    public Section(Station upStation, Station downStation, Long distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
     }
 
-    public static Section of(Station station) {
-        return new Section(station);
+    public static Section of(Station upStation, Station downStation, Long distance) {
+        return new Section(upStation, downStation, distance);
     }
 
-    public Station getStation() {
-        return this.station;
+    public List<Station> getStations() {
+        return List.of(upStation, downStation);
+    }
+
+    public Station getUpStation() {
+        return this.upStation;
+    }
+    public Station getDownStation() {
+        return this.downStation;
+    }
+    public Long getDistance() {
+        return this.distance;
     }
 
 }
