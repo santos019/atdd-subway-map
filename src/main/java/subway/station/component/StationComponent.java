@@ -5,6 +5,8 @@ import subway.station.entity.Station;
 import subway.station.exception.StationNotFoundException;
 import subway.station.repository.StationRepository;
 
+import static subway.common.constant.ErrorCode.STATION_NOT_FOUND;
+
 @Component
 public class StationComponent {
 
@@ -14,8 +16,8 @@ public class StationComponent {
         this.stationRepository = stationRepository;
     }
 
-    public Station getStationByIdOrThrow(Long stationId){
+    public Station getStationByIdOrThrow(Long stationId) {
         return stationRepository.findById(stationId)
-                .orElseThrow(() -> new StationNotFoundException("Station is not found."));
+                .orElseThrow(() -> new StationNotFoundException(String.valueOf(STATION_NOT_FOUND)));
     }
 }
