@@ -18,6 +18,8 @@ import java.util.List;
 import static subway.common.constant.ErrorCode.*;
 import static subway.converter.LineConverter.convertToStationIds;
 import static subway.converter.SectionConverter.convertToSectionResponseByLineAndSection;
+import static subway.section.validator.SectionValidator.validateCreateSection;
+import static subway.section.validator.SectionValidator.validateDeleteSection;
 
 @Service
 public class SectionService {
@@ -41,15 +43,7 @@ public class SectionService {
         Line line = lineService.getLineByIdOrThrow(lineId);
         Sections sections = line.getSections();
 
-        if (sections.getLastDownStationId() != upStation.getId()) {
-            throw new SectionException(String.valueOf(SECTION_NOT_MATCH));
-        }
-
-        List<Long> sectionsStation = convertToStationIds(line);
-
-        if (sectionsStation.contains(downStation.getId())) {
-            throw new SectionException("This descending station already exists. ");
-        }
+        validateCreateSection(line, upStation, downStation);
 
         sections.setLastDownStationId(downStation.getId());
         sections.addSection(section);
@@ -59,19 +53,13 @@ public class SectionService {
     }
 
     @Transactional
-    public void deleteSection(Long lineId, long stationId) {
+    public void deleteSection(Long lineId, Long stationId) {
         Section section = getByDownStationId(stationId);
 
         Line line = lineService.getLineByIdOrThrow(lineId);
         Sections sections = line.getSections();
 
-        if (sections.getLastDownStationId() != stationId) {
-            throw new SectionException(String.valueOf(SECTION_NOT_PERMISSION_NOT_LAST_DESCENDING_STATION));
-        }
-
-        if (sections.getSections().size() <= 1) {
-            throw new SectionException(String.valueOf(SECTION_NOT_PERMISSION_COUNT_TOO_LOW));
-        }
+        validateDeleteSection(sections, stationId);
 
         sections.removeSection(section);
         sections.setLastUpStationId(section.getUpStation().getId());
