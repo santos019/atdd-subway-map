@@ -1,19 +1,29 @@
 package subway.section.dto;
 
-import subway.section.entity.Section;
+import subway.station.dto.StationResponse;
 
 public class SectionResponse {
 
     private Long lineId;
-    private Section section;
 
-    public SectionResponse(Long lineId, Section section) {
+    private Long sectionId;
+
+    private StationResponse upStationResponse;
+
+    private StationResponse downStationResponse;
+
+    private Long distance;
+
+    public SectionResponse(Long lineId, Long sectionId, StationResponse upStationResponse, StationResponse downStationResponse, Long distance) {
         this.lineId = lineId;
-        this.section = section;
+        this.sectionId = sectionId;
+        this.upStationResponse = upStationResponse;
+        this.downStationResponse = downStationResponse;
+        this.distance = distance;
     }
 
-    public static SectionResponse of(Long lineId, Section section) {
-        return new SectionResponse(lineId, section);
+    public static SectionResponse of(Long lineId, Long sectionId, StationResponse upStationResponse, StationResponse downStationResponse, Long distance) {
+        return new SectionResponse(lineId, sectionId, upStationResponse, downStationResponse, distance);
 
     }
 

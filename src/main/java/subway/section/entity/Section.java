@@ -36,6 +36,8 @@ public class Section {
         return new Section(upStation, downStation, distance);
     }
 
+    public Long getId() { return id; }
+
     public List<Station> getStations() {
         return List.of(upStation, downStation);
     }
@@ -43,9 +45,11 @@ public class Section {
     public Station getUpStation() {
         return this.upStation;
     }
+
     public Station getDownStation() {
         return this.downStation;
     }
+
     public Long getDistance() {
         return this.distance;
     }

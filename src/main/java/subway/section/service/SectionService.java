@@ -17,6 +17,7 @@ import java.util.List;
 
 import static subway.common.constant.ErrorCode.*;
 import static subway.converter.LineConverter.convertToStationIds;
+import static subway.converter.SectionConverter.convertToSectionResponseByLineAndSection;
 
 @Service
 public class SectionService {
@@ -54,7 +55,7 @@ public class SectionService {
         sections.addSection(section);
         lineService.saveLine(line);
 
-        return new SectionResponse(lineId, section);
+        return convertToSectionResponseByLineAndSection(line, section);
     }
 
     @Transactional
