@@ -27,6 +27,7 @@ public class SectionAcceptanceTest {
     private LineResponse 신분당선;
 
     @BeforeEach
+    @Sql(scripts = "classpath:truncate-tables.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void setup() {
         강남역 = 지하철_역_등록("강남역");
         선릉역 = 지하철_역_등록("선릉역");
@@ -43,7 +44,6 @@ public class SectionAcceptanceTest {
        Then: 지하철 노선에 관리자가 등록 요청한 새로운 구간이 추가된다. */
     @DisplayName("지하철 구간을 등록한다.")
     @Test
-    @Sql(scripts = "classpath:truncate-tables.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void addSection_success() {
         // given ...
 
@@ -61,7 +61,6 @@ public class SectionAcceptanceTest {
        Then: 관리자의 구간 추가 요청은 실패한다. */
     @DisplayName("지하철 구간 등록에 실패한다. 새로운 구간의 상행역은 등록되어 있는 하행 종점역이어야 한다.")
     @Test
-    @Sql(scripts = "classpath:truncate-tables.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void addSection_fail() {
         // given ...
 
@@ -76,7 +75,6 @@ public class SectionAcceptanceTest {
     Then: 관리자의 구간 추가 요청은 실패한다. */
     @DisplayName("지하철 구간 등록에 실패한다. 이미 노선에 등록되어 있는 지하철 역은 새로운 구간의 하행역이 될 수 없다.")
     @Test
-    @Sql(scripts = "classpath:truncate-tables.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void addSection_fail_2() {
         // given ...
 
@@ -91,7 +89,6 @@ public class SectionAcceptanceTest {
        Then: 관리자가 삭제 요청한 구간이 삭제된다. */
     @DisplayName("지하철 구간을 삭제한다.")
     @Test
-    @Sql(scripts = "classpath:truncate-tables.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void deleteSection_success() {
         // given ...
         지하철_구간_등록(신분당선.getId(), SectionRequest.of(선릉역.getId(), 삼성역.getId(), 10L));
@@ -112,7 +109,6 @@ public class SectionAcceptanceTest {
        Then: 관리자가 구간 삭제 요청은 실패한다. */
     @DisplayName("지하철 구간 삭제를 실패한다. 하행 종점역만 삭제 가능하다.")
     @Test
-    @Sql(scripts = "classpath:truncate-tables.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void deleteSection_fail() {
         // given ...
         지하철_구간_등록(신분당선.getId(), SectionRequest.of(선릉역.getId(), 삼성역.getId(), 10L));
@@ -130,7 +126,6 @@ public class SectionAcceptanceTest {
         Then: 관리자가 삭제 요청은 실패한다. */
     @DisplayName("지하철 구간 삭제 실패한다. 지하철 노선 구간이 1개 이상이어야 삭제가능하다.")
     @Test
-    @Sql(scripts = "classpath:truncate-tables.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void deleteSection_fail_2() {
         // given ...
         LineResponse 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
