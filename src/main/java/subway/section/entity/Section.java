@@ -23,18 +23,23 @@ public class Section {
     @NotNull
     private Long distance;
 
+    @NotNull
+    private Long position;
+
     public Section() {
     }
 
-    public Section(Station upStation, Station downStation, Long distance) {
+    public Section(Station upStation, Station downStation, Long distance, Long position) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+        this.position = position;
     }
 
-    public static Section of(Station upStation, Station downStation, Long distance) {
-        return new Section(upStation, downStation, distance);
+    public static Section of(Station upStation, Station downStation, Long distance, Long position) {
+        return new Section(upStation, downStation, distance, position);
     }
+
 
     public Long getId() { return id; }
 
@@ -54,4 +59,11 @@ public class Section {
         return this.distance;
     }
 
+    public Long getPosition() {
+        return position;
+    }
+
+    public void setDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
 }

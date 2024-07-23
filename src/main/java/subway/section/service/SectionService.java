@@ -13,10 +13,7 @@ import subway.section.repository.SectionRepository;
 import subway.station.entity.Station;
 import subway.station.service.StationService;
 
-import java.util.List;
-
-import static subway.common.constant.ErrorCode.*;
-import static subway.converter.LineConverter.convertToStationIds;
+import static subway.common.constant.ErrorCode.SECTION_NOT_FOUND;
 import static subway.converter.SectionConverter.convertToSectionResponseByLineAndSection;
 import static subway.section.validator.SectionValidator.validateCreateSection;
 import static subway.section.validator.SectionValidator.validateDeleteSection;
@@ -36,16 +33,15 @@ public class SectionService {
 
     @Transactional
     public SectionResponse createSection(Long lineId, SectionRequest sectionRequest) {
-        Station upStation = stationService.getStationByIdOrThrow(sectionRequest.getUpStationId());
-        Station downStation = stationService.getStationByIdOrThrow(sectionRequest.getDownStationId());
-        Section section = Section.of(upStation, downStation, sectionRequest.getDistance());
-
         Line line = lineService.getLineByIdOrThrow(lineId);
         Sections sections = line.getSections();
 
+        Station upStation = stationService.getStationByIdOrThrow(sectionRequest.getUpStationId());
+        Station downStation = stationService.getStationByIdOrThrow(sectionRequest.getDownStationId());
+        Section section = Section.of(upStation, downStation, sectionRequest.getDistance(), sections.getCurrentSectionsPosition() + 1);
+
         validateCreateSection(line, upStation, downStation);
 
-        sections.setLastDownStationId(downStation.getId());
         sections.addSection(section);
         lineService.saveLine(line);
 
@@ -62,7 +58,6 @@ public class SectionService {
         validateDeleteSection(sections, stationId);
 
         sections.removeSection(section);
-        sections.setLastUpStationId(section.getUpStation().getId());
 
         deleteSection(section);
         lineService.saveLine(line);

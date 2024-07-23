@@ -20,7 +20,7 @@ public class SectionValidator {
     public static void validateCreateSection(Line line, Station upStation, Station downStation) {
         List<Long> sectionsStation = convertToStationIds(line);
 
-        validateSectionsLastDownStationIdIsSameUpStationId(line.getSections().getLastDownStationId(), upStation.getId());
+        validateSectionsLastDownStationIdIsSameUpStationId(line.getSections().getLastStation().getId(), upStation.getId());
         validateSectionDoesNotContainStation(sectionsStation, downStation.getId());
     }
 
@@ -37,7 +37,7 @@ public class SectionValidator {
     }
 
     public static void validateDeleteSection(Sections sections, Long stationId) {
-        validateSectionsLastDownStationIsNot(sections.getLastDownStationId(), stationId);
+        validateSectionsLastDownStationIsNot(sections.getLastStation().getId(), stationId);
         validateSectionsMinimumCount(sections.getSections());
     }
 

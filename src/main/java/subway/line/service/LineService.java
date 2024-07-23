@@ -40,13 +40,10 @@ public class LineService {
         Station upStation = stationService.getStationByIdOrThrow(createLineRequest.getUpStationId());
         Station downStation = stationService.getStationByIdOrThrow(createLineRequest.getDownStationId());
 
-        Section section = Section.of(upStation, downStation, createLineRequest.getDistance());
+        Section section = Section.of(upStation, downStation, createLineRequest.getDistance(), 0L);
 
         Sections sections = new Sections();
         sections.addSection(section);
-
-        sections.setLastUpStationId(upStation.getId());
-        sections.setLastDownStationId(downStation.getId());
 
         Line line = Line.of(createLineRequest.getName(), createLineRequest.getColor(), createLineRequest.getDistance(), sections);
         lineRepository.save(line);

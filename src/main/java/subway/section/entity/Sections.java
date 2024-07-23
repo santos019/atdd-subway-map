@@ -1,7 +1,10 @@
 package subway.section.entity;
 
+import subway.station.entity.Station;
+
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Embeddable
@@ -11,11 +14,8 @@ public class Sections {
     @JoinColumn(name = "LINE_ID")
     private List<Section> sections = new ArrayList<>();
 
-    private Long lastUpStationId;
-
-    private Long lastDownStationId;
-
-    public Sections() {}
+    public Sections() {
+    }
 
     public Sections(List<Section> sections) {
         this.sections = sections;
@@ -25,28 +25,38 @@ public class Sections {
         return sections;
     }
 
+    public Section getFirstSection() {
+        return sections.stream()
+                .min(Comparator.comparing(Section::getPosition)).get();
+    }
+
+    public Section getLastSection() {
+        return sections.stream()
+                .max(Comparator.comparing(Section::getPosition)).get();
+    }
+
+    public Station getFirstStation() {
+        return sections.stream()
+                .min(Comparator.comparing(Section::getPosition))
+                .get().getUpStation();
+    }
+
+    public Station getLastStation() {
+        return sections.stream()
+                .max(Comparator.comparing(Section::getPosition))
+                .get().getDownStation();
+    }
+
+    public Long getCurrentSectionsPosition() {
+        return (long) sections.size() - 1;
+    }
+
     public void addSection(Section section) {
         sections.add(section);
     }
 
     public void removeSection(Section section) {
         sections.remove(section);
-    }
-
-    public void setLastUpStationId(Long upLastStationId) {
-        this.lastUpStationId = upLastStationId;
-    }
-
-    public void setLastDownStationId(Long downLastStationId) {
-        this.lastDownStationId = downLastStationId;
-    }
-
-    public Long getLastUpStationId() {
-        return lastUpStationId;
-    }
-
-    public Long getLastDownStationId() {
-        return lastDownStationId;
     }
 
 }
