@@ -5,10 +5,13 @@ import org.springframework.transaction.annotation.Transactional;
 import subway.station.dto.StationRequest;
 import subway.station.dto.StationResponse;
 import subway.station.entity.Station;
+import subway.station.exception.StationNotFoundException;
 import subway.station.repository.StationRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static subway.common.constant.ErrorCode.STATION_NOT_FOUND;
 
 @Service
 @Transactional(readOnly = true)
@@ -41,5 +44,10 @@ public class StationService {
                 station.getId(),
                 station.getName()
         );
+    }
+
+    public Station getStationByIdOrThrow(Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new StationNotFoundException(String.valueOf(STATION_NOT_FOUND)));
     }
 }

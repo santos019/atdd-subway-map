@@ -2,22 +2,23 @@ package subway.line.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import subway.line.component.LineComponent;
 import subway.line.dto.CreateLineRequest;
 import subway.line.dto.LineResponse;
 import subway.line.dto.LinesResponse;
 import subway.line.dto.ModifyLineRequest;
 import subway.line.entity.Line;
+import subway.line.exception.LineNotFoundException;
 import subway.line.repository.LineRepository;
 import subway.section.entity.Section;
 import subway.section.entity.Sections;
 import subway.section.repository.SectionRepository;
-import subway.station.component.StationComponent;
 import subway.station.dto.StationResponse;
 import subway.station.entity.Station;
+import subway.station.service.StationService;
 
 import java.util.List;
 
+import static subway.common.constant.ErrorCode.LINE_NOT_FOUND;
 import static subway.converter.LineConverter.convertToLineResponseByLine;
 import static subway.converter.LineConverter.convertToLineResponseByLineAndStations;
 
@@ -26,20 +27,18 @@ public class LineService {
 
     private final LineRepository lineRepository;
     private final SectionRepository sectionRepository;
-    private final StationComponent stationComponent;
-    private final LineComponent lineComponent;
+    private final StationService stationService;
 
-    public LineService(LineRepository lineRepository, SectionRepository sectionRepository, StationComponent stationComponent, LineComponent lineComponent) {
+    public LineService(LineRepository lineRepository, SectionRepository sectionRepository, StationService stationService) {
         this.lineRepository = lineRepository;
-        this.stationComponent = stationComponent;
+        this.stationService = stationService;
         this.sectionRepository = sectionRepository;
-        this.lineComponent = lineComponent;
     }
 
     @Transactional
     public LineResponse saveLine(final CreateLineRequest createLineRequest) {
-        Station upStation = stationComponent.getStationByIdOrThrow(createLineRequest.getUpStationId());
-        Station downStation = stationComponent.getStationByIdOrThrow(createLineRequest.getDownStationId());
+        Station upStation = stationService.getStationByIdOrThrow(createLineRequest.getUpStationId());
+        Station downStation = stationService.getStationByIdOrThrow(createLineRequest.getDownStationId());
 
         Section section = Section.of(upStation, downStation, createLineRequest.getDistance());
 
@@ -73,14 +72,14 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLine(final Long id) {
-        Line line = lineComponent.getLineByIdOrThrow(id);
+        Line line = getLineByIdOrThrow(id);
 
         return convertToLineResponseByLine(line);
     }
 
     @Transactional
     public void modifyLine(final Long id, final ModifyLineRequest modifyLineRequest) {
-        Line line = lineComponent.getLineByIdOrThrow(id);
+        Line line = getLineByIdOrThrow(id);
         line.changeName(modifyLineRequest.getName());
         line.changeColor(modifyLineRequest.getColor());
 
@@ -89,8 +88,17 @@ public class LineService {
 
     @Transactional
     public void deleteLine(final Long id) {
-        Line line = lineComponent.getLineByIdOrThrow(id);
+        Line line = getLineByIdOrThrow(id);
         lineRepository.delete(line);
+    }
+
+    public Line getLineByIdOrThrow(Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new LineNotFoundException(String.valueOf(LINE_NOT_FOUND)));
+    }
+
+    public Line saveLine(Line line) {
+        return lineRepository.save(line);
     }
 
 }
