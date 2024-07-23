@@ -7,13 +7,18 @@ import subway.line.dto.LineResponse;
 import subway.line.dto.LinesResponse;
 import subway.line.dto.ModifyLineRequest;
 import subway.line.service.LineService;
+import subway.section.dto.SectionRequest;
+import subway.section.dto.SectionResponse;
+import subway.section.service.SectionService;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
 @RequestMapping("/lines")
 public class LineController {
     private LineService lineService;
+    private SectionService sectionService;
 
     public LineController(LineService lineService) {
         this.lineService = lineService;
@@ -48,5 +53,19 @@ public class LineController {
             @PathVariable Long id) {
         lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/sections")
+    public ResponseEntity createSection(@PathVariable Long id, @Valid @RequestBody SectionRequest sectionRequest) {
+        SectionResponse sectionResponse = sectionService.createSection(id, sectionRequest);
+
+        return ResponseEntity.created(URI.create("/lines/" + sectionResponse.getLineId() + "/sections")).body(sectionResponse);
+    }
+
+    @DeleteMapping("/{id}/sections")
+    public ResponseEntity deleteSection(@PathVariable Long id, @RequestParam Long stationId) {
+        sectionService.deleteSection(id, stationId);
+
+        return ResponseEntity.ok().build();
     }
 }
